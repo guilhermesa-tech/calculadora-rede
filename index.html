@@ -3,10 +3,74 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Calculadora de sub-rede IPv4: rede, broadcast, hosts, máscara e wildcard." />
+    <meta name="color-scheme" content="dark" />
     <title>Calculadora de Sub-rede IPv4</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="painel">
+      <header class="topo">
+        <p class="marca"><span class="led" aria-hidden="true"></span> NOC · IPv4</p>
+        <h1>Calculadora de Sub-rede</h1>
+        <p class="subtitulo">
+          Digite um IP em notação CIDR ou um IP com a máscara decimal.
+        </p>
+      </header>
+
+      <main>
+        <!-- O formulário trata o clique em "Calcular" e o Enter em qualquer campo -->
+        <form id="form-calculo" class="cartao formulario" novalidate>
+          <div class="campo">
+            <label for="campo-ip">Endereço IPv4 ou CIDR</label>
+            <input
+              id="campo-ip"
+              name="ip"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="192.168.1.10/26"
+              aria-describedby="mensagem-erro"
+              autofocus
+            />
+          </div>
+
+          <div class="campo">
+            <label for="campo-mascara">
+              Máscara <span class="opcional">(dispensável se usar CIDR)</span>
+            </label>
+            <input
+              id="campo-mascara"
+              name="mascara"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="255.255.255.192"
+              aria-describedby="mensagem-erro"
+            />
+          </div>
+
+          <button type="submit" class="botao">Calcular</button>
+
+          <p id="mensagem-erro" class="erro" role="alert" hidden></p>
+        </form>
+
+        <section id="resultado" class="resultado" aria-live="polite" hidden>
+          <div class="resultado-cabecalho">
+            <h2>Resultado</h2>
+            <span id="resultado-cidr" class="etiqueta"></span>
+          </div>
+          <dl id="lista-resultado" class="grade"></dl>
+          <p id="nota-resultado" class="nota" hidden></p>
+        </section>
+      </main>
+
+      <footer class="rodape">
+        Cálculos feitos localmente no navegador · IPv4 apenas
+      </footer>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
