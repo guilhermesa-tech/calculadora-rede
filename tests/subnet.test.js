@@ -12,6 +12,9 @@ import {
   calculateSubnet,
   parseInput,
   calculateFromInput,
+  validateIPv4,
+  validateMask,
+  validatePrefix,
 } from '../src/subnet.js';
 
 /** Atalho: calcula a partir da entrada e falha o teste se a entrada for rejeitada. */
@@ -193,5 +196,94 @@ describe('formatos de entrada', () => {
   it('ignora espaços nas bordas', () => {
     expect(calcular('  192.168.1.10/24  ').network).toBe('192.168.1.0');
     expect(calcular(' 192.168.1.10 ', ' 255.255.255.0 ').network).toBe('192.168.1.0');
+  });
+});
+
+describe('validação de IP', () => {
+  it('aceita IPs válidos', () => {
+    expect(validateIPv4('0.0.0.0')).toBeNull();
+    expect(validateIPv4('192.168.1.10')).toBeNull();
+    expect(validateIPv4('255.255.255.255')).toBeNull();
+  });
+
+  it.each([
+    ['', 'Informe um endereço IPv4.'],
+    ['   ', 'Informe um endereço IPv4.'],
+    [undefined, 'Informe um endereço IPv4.'],
+    ['192.168.1', 'IP inválido: o endereço deve ter 4 octetos separados por ponto'],
+    ['192.168.1.10.5', 'IP inválido: o endereço deve ter 4 octetos separados por ponto'],
+    ['192.168..10', 'IP inválido: há um octeto vazio'],
+    ['192.168.1.', 'IP inválido: há um octeto vazio'],
+    ['192.168.abc.10', 'IP inválido: o octeto "abc" não é um número inteiro'],
+    ['192.168.-1.10', 'IP inválido: o octeto "-1" não é um número inteiro'],
+    ['192.168.1.1e1', 'IP inválido: o octeto "1e1" não é um número inteiro'],
+    ['192.168.01.10', 'IP inválido: o octeto "01" tem zero à esquerda'],
+    ['256.0.0.1', 'IP inválido: o octeto 256 está acima de 255'],
+    ['192.168.1.300', 'IP inválido: o octeto 300 está acima de 255'],
+  ])('rejeita %j', (entrada, mensagem) => {
+    expect(validateIPv4(entrada)).toContain(mensagem);
+  });
+});
+
+describe('validação de máscara', () => {
+  it('aceita todas as 33 máscaras válidas', () => {
+    for (let prefixo = 0; prefixo <= 32; prefixo++) {
+      expect(validateMask(intToIp(prefixToMask(prefixo)))).toBeNull();
+    }
+  });
+
+  it.each([
+    ['', 'Informe a máscara de sub-rede.'],
+    ['255.255.255', 'Máscara inválida: o endereço deve ter 4 octetos'],
+    ['255.255.256.0', 'Máscara inválida: o octeto 256 está acima de 255'],
+    ['255.255.x.0', 'Máscara inválida: o octeto "x" não é um número inteiro'],
+    ['255.0.255.0', 'Máscara inválida: os bits 1 devem ser contínuos'],
+    ['255.255.255.1', 'Máscara inválida: os bits 1 devem ser contínuos'],
+    ['0.255.255.255', 'Máscara inválida: os bits 1 devem ser contínuos'],
+    ['255.255.255.193', 'Máscara inválida: os bits 1 devem ser contínuos'],
+  ])('rejeita %j', (entrada, mensagem) => {
+    expect(validateMask(entrada)).toContain(mensagem);
+  });
+});
+
+describe('validação de prefixo', () => {
+  it('aceita prefixos de 0 a 32, com ou sem barra', () => {
+    expect(validatePrefix('0')).toBeNull();
+    expect(validatePrefix('/24')).toBeNull();
+    expect(validatePrefix('32')).toBeNull();
+  });
+
+  it.each([
+    ['', 'Prefixo inválido: informe um número de 0 a 32'],
+    ['/', 'Prefixo inválido: informe um número de 0 a 32'],
+    ['33', 'Prefixo fora do intervalo: /33 deve estar entre 0 e 32'],
+    ['/99', 'Prefixo fora do intervalo: /99 deve estar entre 0 e 32'],
+    ['-1', 'Prefixo inválido: "-1" não é um número inteiro'],
+    ['24.5', 'Prefixo inválido: "24.5" não é um número inteiro'],
+    ['abc', 'Prefixo inválido: "abc" não é um número inteiro'],
+  ])('rejeita %j', (entrada, mensagem) => {
+    expect(validatePrefix(entrada)).toContain(mensagem);
+  });
+});
+
+describe('entradas inválidas na calculadora', () => {
+  it.each([
+    [['', ''], 'Informe um endereço IPv4.'],
+    [['300.1.1.1/24'], 'IP inválido: o octeto 300 está acima de 255'],
+    [['192.168.1.10/33'], 'Prefixo fora do intervalo: /33 deve estar entre 0 e 32'],
+    [['192.168.1.10/-1'], 'Prefixo inválido: "-1" não é um número inteiro'],
+    [['192.168.1.10/'], 'Prefixo inválido: informe um número de 0 a 32'],
+    [['192.168.1.10/24/8'], 'Entrada inválida: use apenas uma barra'],
+    [['192.168.1.10'], 'Informe a máscara'],
+    [['192.168.1.10', '   '], 'Informe a máscara'],
+    [['192.168.1.10/24', '255.255.255.0'], 'Use apenas um formato'],
+    [['192.168.1.10', '255.255.0.255'], 'Máscara inválida: os bits 1 devem ser contínuos'],
+    [['192.168.1.10', '255.255.255.256'], 'Máscara inválida: o octeto 256 está acima de 255'],
+    [['192.168.1.10', '40'], 'Prefixo fora do intervalo: /40 deve estar entre 0 e 32'],
+  ])('rejeita %j', (argumentos, mensagem) => {
+    const resposta = calculateFromInput(...argumentos);
+    expect(resposta.ok).toBe(false);
+    expect(resposta.error).toContain(mensagem);
+    expect(resposta).not.toHaveProperty('result');
   });
 });
