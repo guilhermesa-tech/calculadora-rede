@@ -65,6 +65,21 @@ npm run build
 npm run preview
 ```
 
+> **Atenção:** não abra o `index.html` (nem o `dist/index.html`) com duplo clique no navegador.
+> Aberta como arquivo (`file://`), a página não carrega o JavaScript nem o CSS e o botão não faz nada.
+> Use sempre um servidor: `npm run dev` para desenvolver ou `npm run build` + `npm run preview`
+> para testar o build, e acesse o endereço `http://localhost:...` mostrado no terminal.
+
+### Como preencher
+
+| Campo de IP       | Campo de máscara             |
+| ----------------- | ---------------------------- |
+| `192.168.1.10/26` | *(vazio)*                    |
+| `192.168.1.10`    | `255.255.255.192`            |
+| `192.168.1.10`    | `/26` ou `26`                |
+
+Preencher os dois campos com CIDR **e** máscara ao mesmo tempo gera uma mensagem de erro.
+
 O `vite.config.js` usa `base: './'`, então o conteúdo de `dist/` funciona no GitHub Pages
 em qualquer nome de repositório (os caminhos dos arquivos são relativos).
 
