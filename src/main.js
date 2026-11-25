@@ -1,6 +1,7 @@
 // Camada de interface: lê os campos, chama as funções de src/subnet.js
 // e mostra o resultado ou a mensagem de erro. Nenhum cálculo é feito aqui.
 import { calculateFromInput } from './subnet.js';
+import './style.css';
 
 const formulario = document.querySelector('#form-calculo');
 const campoIp = document.querySelector('#campo-ip');

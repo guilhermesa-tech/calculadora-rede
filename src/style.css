@@ -1,0 +1,334 @@
+/* Tema escuro inspirado em painel de NOC: fundo grafite, texto claro,
+   destaques em verde/ciano e fonte monoespaçada para os endereços. */
+
+:root {
+  --fundo: #0b0f14;
+  --fundo-grade: rgba(56, 189, 248, 0.04);
+  --superficie: #121821;
+  --superficie-2: #18202b;
+  --borda: #253041;
+  --texto: #e2e8f0;
+  --texto-suave: #8b98ab;
+  --verde: #34d399;
+  --ciano: #38bdf8;
+  --erro: #f87171;
+  --erro-fundo: rgba(248, 113, 113, 0.1);
+  --aviso: #fbbf24;
+  --raio: 10px;
+  --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fonte-mono: ui-monospace, 'SFMono-Regular', 'JetBrains Mono', Consolas, 'Liberation Mono', monospace;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--fonte);
+  line-height: 1.5;
+  color: var(--texto);
+  background-color: var(--fundo);
+  /* Grade sutil ao fundo, lembrando telas de monitoramento */
+  background-image:
+    linear-gradient(var(--fundo-grade) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fundo-grade) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.painel {
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 16px 24px;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.topo {
+  margin-bottom: 24px;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--verde);
+}
+
+/* LED de status "online" piscando suavemente */
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--verde);
+  box-shadow: 0 0 8px var(--verde);
+  animation: pulsar 2s ease-in-out infinite;
+}
+
+@keyframes pulsar {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  color: var(--texto-suave);
+}
+
+/* ---------- Formulário ---------- */
+
+.cartao {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 16px;
+  padding: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.opcional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: var(--fonte-mono);
+  font-size: 1rem; /* 16px evita o zoom automático no iOS */
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input::placeholder {
+  color: #4b5768;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--ciano);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--erro);
+}
+
+.botao {
+  padding: 12px 24px;
+  font: inherit;
+  font-weight: 650;
+  color: #04130d;
+  background: var(--verde);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.05s;
+}
+
+.botao:hover {
+  filter: brightness(1.1);
+}
+
+.botao:active {
+  transform: translateY(1px);
+}
+
+.botao:focus-visible {
+  outline: 3px solid var(--ciano);
+  outline-offset: 2px;
+}
+
+.erro {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: var(--erro);
+  background: var(--erro-fundo);
+  border-left: 3px solid var(--erro);
+  border-radius: 6px;
+}
+
+/* ---------- Resultado ---------- */
+
+.resultado {
+  margin-top: 24px;
+}
+
+.resultado-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.etiqueta {
+  padding: 4px 10px;
+  font-family: var(--fonte-mono);
+  font-size: 0.9rem;
+  color: var(--ciano);
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 999px;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.dado {
+  padding: 14px 16px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-left: 3px solid var(--borda);
+  border-radius: var(--raio);
+}
+
+.dado-destaque {
+  border-left-color: var(--verde);
+}
+
+.dado dt {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.dado dd {
+  margin: 4px 0 0;
+  font-family: var(--fonte-mono);
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.dado dd.indisponivel {
+  font-family: var(--fonte);
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+.nota {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: var(--aviso);
+  background: rgba(251, 191, 36, 0.08);
+  border-left: 3px solid var(--aviso);
+  border-radius: 6px;
+}
+
+/* ---------- Rodapé ---------- */
+
+.rodape {
+  margin-top: 32px;
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+/* Garante que o atributo hidden sempre esconda, mesmo com display definido */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 640px) {
+  .painel {
+    padding-top: 20px;
+  }
+
+  .formulario {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .botao {
+    width: 100%;
+  }
+
+  .grade {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .dado {
+    padding: 12px;
+  }
+
+  .dado dd {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .grade {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Respeita quem prefere menos animação */
+@media (prefers-reduced-motion: reduce) {
+  .led {
+    animation: none;
+  }
+}
